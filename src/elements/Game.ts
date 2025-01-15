@@ -4,6 +4,7 @@ import { Enemy } from "./Enemy";
 import { Player } from "./Player";
 import { Projectile } from "./Projectile";
 import { Star } from "./Star";
+import { UI } from "./UI";
 
 export class Game {
   // Canvas configurations
@@ -24,9 +25,12 @@ export class Game {
   projectiles: Projectile[] = [];
   enemies: Enemy[] = [];
   stars: Star[] = [];
+  ui: UI;
 
   // States
   gameOver: boolean = false;
+  score: number = 0;
+  level = 1;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -40,6 +44,7 @@ export class Game {
       this.canvas.height - 100
     );
     this.keyboard = new Keyboard(this.player);
+    this.ui = new UI(this);
 
     for (let i = 0; i < 400; i++) {
       this.stars.push(new Star(this));
@@ -62,13 +67,21 @@ export class Game {
     this.enemies.forEach((enemy) => {
       enemy.render(this.ctx);
     });
+
+    // Layer 4 (UI)
+    this.ui.render(this.ctx);
   }
 
   update() {
     if (this.gameOver) {
-      alert("Game Over my dear! 😭");
+      alert(`Game Over my dear! 😭 - Score: ${this.score}`);
       return;
     }
+
+    this.score += 0.5;
+
+    this.level = +(this.score / 2000).toFixed() + 1;
+
     this.player.update();
     this.keyboard.update();
 
@@ -89,9 +102,11 @@ export class Game {
 
       this.enemies.forEach((enemy, j) => {
         if (rectCollision(projectile, enemy)) {
+          this.score += 50;
           enemy.health--;
           enemy.height -= enemy.height / 3;
           if (enemy.health <= 0) {
+            this.score += 100;
             this.enemies.splice(j, 1);
           }
           this.projectiles.splice(index, 1);
@@ -107,7 +122,6 @@ export class Game {
       }
 
       if (rectCollision(enemy, this.player)) {
-        console.log("Game is over");
         this.gameOver = true;
       }
       enemy.update();
