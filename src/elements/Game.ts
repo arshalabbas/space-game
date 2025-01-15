@@ -6,6 +6,8 @@ import { Projectile } from "./Projectile";
 import { Star } from "./Star";
 import { UI } from "./UI";
 
+const gameOverModal = document.querySelector(".over-modal") as HTMLDivElement;
+
 export class Game {
   // Canvas configurations
   canvas: HTMLCanvasElement;
@@ -74,11 +76,14 @@ export class Game {
 
   update() {
     if (this.gameOver) {
-      alert(`Game Over my dear! 😭 - Score: ${this.score}`);
-      return;
+      (
+        gameOverModal.querySelector("#score") as HTMLDivElement
+      ).textContent = `Score: ${this.score}`;
+      gameOverModal.classList.add("show");
+      // location.reload();
     }
 
-    this.score += 0.5;
+    if (!this.gameOver) this.score += 0.5;
 
     this.level = +(this.score / 2000).toFixed() + 1;
 

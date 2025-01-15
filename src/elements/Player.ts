@@ -28,6 +28,7 @@ export class Player implements Rect {
   }
 
   render(ctx: CanvasRenderingContext2D) {
+    if (this.game.gameOver) return;
     ctx.drawImage(ship, this.x, this.y, this.width, this.height);
   }
 
